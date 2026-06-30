@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -1122,6 +1122,15 @@
       navigator.serviceWorker.register('sw.js')
         .then(r => console.log('SW registered:', r.scope))
         .catch(e => console.log('SW error:', e));
+    });
+
+    // 서비스 워커 업데이트로 새 버전 제어권 획득 시 즉시 자동 리로드
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
     });
   }
 </script>
