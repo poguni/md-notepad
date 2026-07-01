@@ -1,4 +1,4 @@
-const CACHE_NAME = 'md-notepad-v3.0';
+const CACHE_NAME = 'md-notepad-v3.1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -40,7 +40,7 @@ self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
 
   // CDN 리소스(marked.js, Google Fonts 등)는 네트워크 우선
-  if (requestUrl.hostname.includes('jsdelivr.net') || requestUrl.hostname.includes('fonts.googleapis.com') || requestUrl.hostname.includes('fonts.gstatic.com')) {
+  if (requestUrl.hostname.includes('jsdelivr.net') || requestUrl.hostname.includes('cdnjs.cloudflare.com') || requestUrl.hostname.includes('fonts.googleapis.com') || requestUrl.hostname.includes('fonts.gstatic.com')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {

@@ -249,8 +249,31 @@
     white-space: nowrap;
     flex: 1;
     min-width: 0;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: background .15s, border-color .15s;
   }
+  #filename-display:hover { background: var(--accent-dim); border-color: var(--border); }
   #filename-display.unsaved::after { content: ' •'; color: var(--accent); }
+
+  /* 파일명 인라인 편집 input */
+  #filename-input {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text);
+    background: var(--editor-bg);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 3px 6px;
+    outline: none;
+    flex: 1;
+    min-width: 0;
+    max-width: 240px;
+  }
+  #filename-input.active { display: block; }
   .header-actions { display: flex; gap: 6px; margin-left: auto; align-items: center; flex-shrink: 0; }
 
   /* ── Theme Select ── */
@@ -328,7 +351,7 @@
   .tool-sep { width: 1px; height: 16px; background: var(--border); margin: 0 3px; flex-shrink: 0; }
 
   /* ── Main area ── */
-  #main { display: flex; height: calc(100vh - 48px - 36px - 26px); }
+  #main { display: flex; height: calc(100vh - 48px - 36px - 30px); }
 
   /* ── Editor pane ── */
   #editor-pane { flex: none; width: 50%; display: flex; flex-direction: column; min-width: 120px; }
@@ -388,6 +411,11 @@
     transition: background .2s, color .2s;
   }
   #editor::placeholder { color: var(--text-muted); }
+  #editor.drag-over {
+    outline: 2px dashed var(--accent);
+    outline-offset: -3px;
+    background: var(--accent-dim);
+  }
   #editor::-webkit-scrollbar { width: 5px; }
   #editor::-webkit-scrollbar-track { background: transparent; }
   #editor::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
@@ -443,7 +471,7 @@
 
   /* ── Status bar ── */
   #statusbar {
-    height: 26px;
+    height: 30px;
     background: var(--surface);
     border-top: 1px solid var(--border);
     display: flex;
@@ -451,7 +479,7 @@
     padding: 0 12px;
     gap: 14px;
     font-family: var(--font-mono);
-    font-size: 10.5px;
+    font-size: 13px;
     color: var(--text-muted);
   }
   #statusbar span { display: flex; align-items: center; gap: 3px; }
@@ -500,7 +528,7 @@
   [data-scale="1"] #scale-indicator  { font-size: 10px; }
   [data-scale="1"] #editor           { font-size: 14px; line-height: 1.75; }
   [data-scale="1"] #preview          { font-size: 14px; line-height: 1.75; }
-  [data-scale="1"] #main             { height: calc(100vh - 52px - 40px - 26px); }
+  [data-scale="1"] #main             { height: calc(100vh - 52px - 40px - 30px); }
 
   /* ─ 2단계 ─ */
   [data-scale="2"] #header           { height: 56px; }
@@ -516,7 +544,7 @@
   [data-scale="2"] #scale-indicator  { font-size: 11px; }
   [data-scale="2"] #editor           { font-size: 15.5px; line-height: 1.8; }
   [data-scale="2"] #preview          { font-size: 15.5px; line-height: 1.8; }
-  [data-scale="2"] #main             { height: calc(100vh - 56px - 44px - 26px); }
+  [data-scale="2"] #main             { height: calc(100vh - 56px - 44px - 30px); }
 
   /* ─ 3단계 (기본값) ─ */
   [data-scale="3"] #header           { height: 60px; }
@@ -532,7 +560,7 @@
   [data-scale="3"] #scale-indicator  { font-size: 12px; }
   [data-scale="3"] #editor           { font-size: 17px; line-height: 1.85; }
   [data-scale="3"] #preview          { font-size: 17px; line-height: 1.85; }
-  [data-scale="3"] #main             { height: calc(100vh - 60px - 48px - 26px); }
+  [data-scale="3"] #main             { height: calc(100vh - 60px - 48px - 30px); }
 
   /* ─ 4단계 ─ */
   [data-scale="4"] #header           { height: 64px; }
@@ -548,7 +576,7 @@
   [data-scale="4"] #scale-indicator  { font-size: 13px; }
   [data-scale="4"] #editor           { font-size: 19px; line-height: 1.9; }
   [data-scale="4"] #preview          { font-size: 19px; line-height: 1.9; }
-  [data-scale="4"] #main             { height: calc(100vh - 64px - 52px - 26px); }
+  [data-scale="4"] #main             { height: calc(100vh - 64px - 52px - 30px); }
 
   /* ─ 5단계 ─ */
   [data-scale="5"] #header           { height: 68px; }
@@ -564,7 +592,7 @@
   [data-scale="5"] #scale-indicator  { font-size: 14px; }
   [data-scale="5"] #editor           { font-size: 21px; line-height: 1.95; }
   [data-scale="5"] #preview          { font-size: 21px; line-height: 1.95; }
-  [data-scale="5"] #main             { height: calc(100vh - 68px - 56px - 26px); }
+  [data-scale="5"] #main             { height: calc(100vh - 68px - 56px - 30px); }
 
   /* Scale buttons */
   .scale-btn {
@@ -668,7 +696,7 @@
     body[data-mobile-view="preview"] #preview-pane { flex: 1 !important; }
 
     /* 상태바: 일부 정보 축약 */
-    #statusbar { font-size: 9.5px; gap: 8px; padding: 0 8px; }
+    #statusbar { font-size: 11.5px; gap: 8px; padding: 0 8px; }
     #stat-theme { display: none; }
   }
 
@@ -688,7 +716,8 @@
 <div id="header">
   <img id="app-icon" src="icon-192.png" alt="MD메모장 아이콘">
   <span id="logo">MD<span>#</span></span>
-  <div id="filename-display">새 문서.md</div>
+  <div id="filename-display" title="클릭하여 파일명 변경">새 문서.md</div>
+  <input id="filename-input" type="text" maxlength="200" spellcheck="false">
   <div class="header-actions">
     <button class="btn" onclick="openFile()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4.5A1.5 1.5 0 0 1 3.5 3h3.086a1.5 1.5 0 0 1 1.06.44l1.415 1.415A1.5 1.5 0 0 0 10.12 5.5H12.5A1.5 1.5 0 0 1 14 7v5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12V4.5Z"/></svg>
@@ -697,6 +726,10 @@
     <button class="btn" onclick="saveFile()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 10.5v2a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-2M8 2v7.5M5.5 7 8 9.5 10.5 7"/></svg>
       저장
+    </button>
+    <button class="btn" onclick="exportHTML()" title="HTML로 내보내기">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.5 5.5 2 8l2.5 2.5M11.5 5.5 14 8l-2.5 2.5M9.5 3.5l-3 9"/></svg>
+      HTML
     </button>
     <button class="btn primary" onclick="newDoc()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M8 3v10"/></svg>
@@ -822,6 +855,46 @@
   const editor = document.getElementById('editor');
   const preview = document.getElementById('preview');
   const filenameDisplay = document.getElementById('filename-display');
+  const filenameInput   = document.getElementById('filename-input');
+
+  // ── 파일명 인라인 편집 ──────────────────────────────────────────────
+  function startRenaming() {
+    const wasUnsaved = unsaved;
+    filenameInput.value = currentFilename;
+    filenameDisplay.style.display = 'none';
+    filenameInput.classList.add('active');
+    filenameInput.focus();
+    // 확장자 앞까지만 선택
+    const dotIdx = currentFilename.lastIndexOf('.');
+    filenameInput.setSelectionRange(0, dotIdx > 0 ? dotIdx : currentFilename.length);
+  }
+
+  function commitRename() {
+    let name = filenameInput.value.trim();
+    if (name) {
+      // .md 확장자 없으면 자동 추가
+      if (!name.match(/\.(md|markdown|txt)$/i)) name += '.md';
+      currentFilename = name;
+      filenameDisplay.textContent = currentFilename;
+      markUnsaved();
+      showToast('파일명: ' + currentFilename);
+    }
+    filenameInput.classList.remove('active');
+    filenameDisplay.style.display = '';
+  }
+
+  function cancelRename() {
+    filenameInput.classList.remove('active');
+    filenameDisplay.style.display = '';
+  }
+
+  filenameDisplay.addEventListener('click', startRenaming);
+
+  filenameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  { e.preventDefault(); commitRename(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancelRename(); }
+  });
+  filenameInput.addEventListener('blur', commitRename);
   const fileInput = document.getElementById('file-input');
   const themeSelect = document.getElementById('theme-select');
   const statTheme = document.getElementById('stat-theme');
@@ -840,7 +913,41 @@
 
   function renderPreview() {
     preview.innerHTML = marked.parse(editor.value);
+
+    // 체크박스 활성화
     preview.querySelectorAll('input[type=checkbox]').forEach(cb => cb.disabled = false);
+
+    // 헤딩에 id 자동 부여 (앵커 이동 대상)
+    preview.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(h => {
+      if (!h.id) {
+        h.id = h.textContent.trim()
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w\uAC00-\uD7A3가-힣-]/g, '');
+      }
+    });
+
+    // 링크 클릭 처리
+    preview.querySelectorAll('a[href]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const href = a.getAttribute('href');
+
+        if (href.startsWith('#')) {
+          // 미리보기 내 앵커 스크롤
+          const target = preview.querySelector(href) ||
+                         preview.querySelector('[id="' + href.slice(1) + '"]');
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            showToast('앵커를 찾을 수 없어요: ' + href);
+          }
+        } else {
+          // 외부 링크 → 새 탭
+          window.open(href, '_blank', 'noopener,noreferrer');
+        }
+      });
+    });
   }
 
   function updateStats() {
@@ -864,7 +971,17 @@
     showToast('테마: ' + (themeNames[theme] || theme));
   }
 
-  editor.addEventListener('input', () => { renderPreview(); updateStats(); markUnsaved(); });
+  // 자동 저장 타이머
+  let autoSaveTimer;
+  editor.addEventListener('input', () => {
+    renderPreview(); updateStats(); markUnsaved();
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+      localStorage.setItem('md-autosave', editor.value);
+      localStorage.setItem('md-autosave-time', Date.now());
+      showToast('자동 저장됨');
+    }, 2000);
+  });
 
   // Toolbar helpers
   function wrap(before, after) {
@@ -896,6 +1013,83 @@
     editor.focus(); renderPreview(); markUnsaved();
   }
 
+  // ── 이미지 드래그 앤 드롭 & URL 붙여넣기 ────────────────────────────
+  function insertImageMd(src, alt) {
+    const md = `![${alt}](${src})`;
+    const pos = editor.selectionStart;
+    editor.setRangeText(md, pos, pos, 'end');
+    editor.focus(); renderPreview(); markUnsaved();
+  }
+
+  editor.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    editor.classList.add('drag-over');
+  });
+  editor.addEventListener('dragleave', e => {
+    // relatedTarget이 에디터 바깥일 때만 제거 (자식 요소 이동 시 깜빡임 방지)
+    if (!editor.contains(e.relatedTarget)) editor.classList.remove('drag-over');
+  });
+  editor.addEventListener('drop', e => {
+    e.preventDefault();
+    editor.classList.remove('drag-over');
+
+    // ① 파일 드롭
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        // 이미지 → md 파일과 같은 폴더에 있다고 가정, 파일명만 상대경로로 삽입
+        const alt = file.name.replace(/\.[^.]+$/, '');
+        insertImageMd(file.name, alt);
+        showToast('이미지 링크 삽입됨: ' + file.name);
+      } else if (file.name.match(/\.md$|\.markdown$|\.txt$/i)) {
+        // .md / .txt 파일 → 열기
+        const reader = new FileReader();
+        reader.onload = ev => {
+          if (unsaved && editor.value.trim()) {
+            if (!confirm('저장하지 않은 내용이 있습니다. 파일을 열까요?')) return;
+          }
+          editor.value = ev.target.result;
+          currentFilename = file.name;
+          savedContent = editor.value;
+          unsaved = false;
+          filenameDisplay.textContent = currentFilename;
+          filenameDisplay.classList.remove('unsaved');
+          renderPreview(); updateStats();
+          showToast(file.name + ' 열림');
+        };
+        reader.readAsText(file, 'UTF-8');
+      } else {
+        showToast('이미지 또는 .md 파일만 드롭할 수 있어요');
+      }
+      return;
+    }
+
+    // ② URL 드롭 (브라우저에서 이미지를 직접 드래그한 경우)
+    const url = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain');
+    if (url && url.match(/^https?:\/\//)) {
+      const alt = url.split('/').pop().replace(/\?.*$/, '').replace(/\.[^.]+$/, '') || '이미지';
+      insertImageMd(url, alt);
+      showToast('웹 이미지 링크 삽입됨');
+    }
+  });
+
+  // ── 웹 이미지 URL 붙여넣기 (Ctrl+V로 URL 텍스트 붙여넣기) ────────────
+  editor.addEventListener('paste', e => {
+    const text = e.clipboardData.getData('text/plain').trim();
+    // URL이 이미지 확장자로 끝나거나 이미지 호스팅 도메인인 경우 자동 변환
+    const isImageUrl = text.match(/^https?:\/\//) &&
+      (text.match(/\.(png|jpe?g|gif|webp|svg|avif)(\?.*)?$/i) ||
+       text.match(/imgur\.com|i\.imgur|pbs\.twimg\.com|images\.unsplash\.com/));
+    if (isImageUrl) {
+      e.preventDefault();
+      const alt = text.split('/').pop().replace(/\?.*$/, '').replace(/\.[^.]+$/, '') || '이미지';
+      insertImageMd(text, alt);
+      showToast('웹 이미지 URL 삽입됨');
+    }
+    // 일반 텍스트 URL이나 다른 내용은 기본 붙여넣기 동작 유지
+  });
+
   // File ops
   function openFile() { fileInput.click(); }
   fileInput.addEventListener('change', e => {
@@ -926,6 +1120,43 @@
     unsaved = false;
     filenameDisplay.classList.remove('unsaved');
     showToast(currentFilename + ' 저장됨');
+  }
+
+  function exportHTML() {
+    const htmlContent = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${currentFilename.replace(/\.md$/i, '')}</title>
+<style>
+  body { max-width: 800px; margin: 2rem auto; padding: 0 1rem; font-family: -apple-system, 'Noto Sans KR', sans-serif; line-height: 1.75; color: #212121; }
+  h1 { font-size: 1.85em; border-bottom: 2px solid #1a73e8; padding-bottom: .25em; }
+  h2 { font-size: 1.4em; }
+  h3 { font-size: 1.1em; }
+  code { font-family: monospace; background: #f5f5f5; border: 1px solid #e0e0e0; padding: .1em .35em; border-radius: 4px; color: #1a73e8; }
+  pre { background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 14px; overflow-x: auto; }
+  pre code { background: none; border: none; color: inherit; }
+  blockquote { border-left: 3px solid #1a73e8; margin: .7em 0; padding: .35em .9em; background: #d2e3fc; border-radius: 0 6px 6px 0; color: #5f6368; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; }
+  th { background: #f5f5f5; font-weight: 600; }
+  img { max-width: 100%; }
+  a { color: #1a73e8; }
+</style>
+</head>
+<body>
+${preview.innerHTML}
+</body>
+</html>`;
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = currentFilename.replace(/\.md$/i, '') + '.html';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('HTML로 내보냈어요!');
   }
 
   function newDoc() {
@@ -996,10 +1227,20 @@
     applyMobileView(mobileView === 'editor' ? 'preview' : 'editor');
   }
 
-  // Restore saved theme
-  const savedTheme = localStorage.getItem('md-theme') || 'light';
+  // Restore saved theme — 저장된 테마 없으면 시스템 다크모드 자동 감지
+  const savedTheme = localStorage.getItem('md-theme') ||
+    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   themeSelect.value = savedTheme;
   applyTheme(savedTheme);
+
+  // 시스템 다크/라이트 전환 시 저장된 테마가 없을 때만 자동 반영
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('md-theme')) {
+      const auto = e.matches ? 'dark' : 'light';
+      themeSelect.value = auto;
+      applyTheme(auto);
+    }
+  });
   applyScale(currentScale);
   applyMobileView(mobileView);
 
@@ -1111,6 +1352,19 @@
       }
     });
   })();
+
+  // 자동 저장 복원
+  const autoSaved = localStorage.getItem('md-autosave');
+  const autoSavedTime = localStorage.getItem('md-autosave-time');
+  if (autoSaved) {
+    const timeStr = autoSavedTime
+      ? new Date(parseInt(autoSavedTime)).toLocaleString('ko-KR')
+      : '';
+    if (confirm(`자동 저장된 내용이 있어요 (${timeStr}).\n복원할까요?`)) {
+      editor.value = autoSaved;
+      markUnsaved();
+    }
+  }
 
   renderPreview();
   updateStats();
